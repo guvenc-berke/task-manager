@@ -18,4 +18,10 @@ public class TaskResponseDto extends TaskRequestDto {
         this.id = task.getId();
         this.createdAt = task.getCreatedAt();
     }
+
+    public TaskResponseDto(String title, String content, Long id) {
+        super(title, content);
+        this.createdAt = LocalDateTime.now();
+        this.id = id;
+    }
 }

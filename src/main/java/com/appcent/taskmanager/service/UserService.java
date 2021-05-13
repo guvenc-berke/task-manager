@@ -32,7 +32,9 @@ public class UserService implements IUserService {
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
+        UserDetailsImpl userPrincipal =(UserDetailsImpl) authentication.getPrincipal();
+
+        String jwt = jwtUtils.generateJwtToken(userPrincipal);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 

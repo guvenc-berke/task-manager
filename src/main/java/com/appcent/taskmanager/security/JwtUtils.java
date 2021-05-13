@@ -19,9 +19,7 @@ public class JwtUtils {
     @Value("${security.jwt.expiration}")
     private int jwtExpirationMs;
 
-    public String generateJwtToken(Authentication authentication) {
-
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+    public String generateJwtToken(UserDetailsImpl userPrincipal) {
 
         return Jwts.builder()
                 .setSubject((userPrincipal.getUsername()))

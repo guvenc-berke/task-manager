@@ -49,7 +49,7 @@ public class TaskServiceTest {
         ArgumentCaptor<Task> taskCaptor = ArgumentCaptor.forClass(Task.class);
 
         when(userService.getUserByEmail(EMAIL)).thenReturn(USER);
-        when(taskRepository.findByTitleAndIsCompletedAndUser(eq(requestDto.getTitle()), eq(false),eq(USER)))
+        when(taskRepository.findByTitleAndIsCompletedAndUser(eq(requestDto.getTitle()), eq(false), eq(USER)))
                 .thenReturn(Optional.empty());
 
         when(taskRepository.save(any(Task.class))).thenReturn(new Task());
@@ -76,9 +76,8 @@ public class TaskServiceTest {
 
     @Test
     public void getUserTasks_success() {
+
         when(userService.getUserByEmail(EMAIL)).thenReturn(USER);
-
-
         when(taskRepository.findAllByUserAndIsCompleted(eq(USER), eq(false)))
                 .thenReturn(Collections.singletonList(new Task()));
 
@@ -89,17 +88,26 @@ public class TaskServiceTest {
 
     @Test
     public void updateTask_success() {
+        Long taskId = 1L;
+        TaskRequestDto requestDto = new TaskRequestDto("new title", "new content");
+
+        ArgumentCaptor<Task> taskCaptor = ArgumentCaptor.forClass(Task.class);
+
+        when(taskRepository.findById(taskId)).thenReturn(Optional.of(new Task("title", "content", new User())));
+        when(taskRepository.save(any(Task.class))).thenReturn(new Task());
+
+        taskService.updateTask(taskId, requestDto);
+
+        verify(taskRepository).save(taskCaptor.capture());
+
+        assertThat(taskCaptor.getValue().getTitle()).isEqualTo(requestDto.getTitle());
+        assertThat(taskCaptor.getValue().getContent()).isEqualTo(requestDto.getContent());
     }
 
     @Test
     public void updateTask_taskNotFound() {
-    }
+        RestClientException ex = assertThrows(RestClientException.class, () -> taskService.updateTask(1L, new TaskRequestDto()));
 
-    @Test
-    public void changeTaskStatus_success() {
-    }
-
-    @Test
-    public void deleteTask_success() {
+        assertThat(ex.getMessage()).isEqualTo("Task not found!!!");
     }
 }
